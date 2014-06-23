@@ -1,0 +1,7 @@
+[Unit]
+Description=EndlessOS License Service
+Wants=network.target
+
+[Service]
+Environment=NODE_ENV=production
+ExecStart=/usr/bin/nodejs @pkgdatadir@/licenseApp.js

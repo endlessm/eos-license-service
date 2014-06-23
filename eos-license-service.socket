@@ -1,0 +1,9 @@
+[Unit]
+Description=EndlessOS License Service Socket
+Wants=network.target
+
+[Socket]
+ListenStream=3010
+
+[Install]
+WantedBy=graphical.target
