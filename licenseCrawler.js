@@ -77,7 +77,10 @@ exports.getLicenseList = function(req, res) {
 	'<meta charset="UTF-8">';
     var htmlStyle =
 	'<style>\n' +
-	'.package-name { font-family: sans-serif; font-size: 16px; font-weight: bold; }\n' +
+	'body{margin:50px;min-width:630px;font-family: sans-serif;}\n' +
+	'h2{border-top:5px solid #4a4a4a;padding-top:20px;font-size:28px;line-height:34px;margin-top:70px;}\n' +
+	'h3{border-top:solid 1px #d8d8d8;padding-top:20px;font-size:22px;line-height:26px;clear:both;margin-top:50px;}\n' +
+	'p{font-size:18px;line-height:28px;}\n' +
 	'.copyright { font-family: monospace; font-size: initial; font-weight: initial; }\n' +
 	'</style>\n';
     var htmlHeader =
@@ -87,6 +90,8 @@ exports.getLicenseList = function(req, res) {
 	htmlStyle + 
 	'</head>\n' +
 	'<body>\n';
+	'<h2>Open Source Software</h2>\n';
+	// Happy preamble of legal compliance goes here...
     var htmlFooter =
 	'</body>\n' +
 	'</html>';
@@ -111,19 +116,19 @@ exports.getLicenseList = function(req, res) {
 	    .replace(/</g, '&lt;')
 	    .replace(/>/g, '&gt;')
 	    .replace(/\t/g, '    ')
-            .replace(/  /g, '&nbsp; ')
-            .replace(/  /g, ' &nbsp;')
-            .replace(/\r\n|\n|\r/g, '<br />');
+	    .replace(/  /g, '&nbsp; ')
+	    .replace(/  /g, ' &nbsp;')
+	    .replace(/\r\n|\n|\r/g, '<br />');
 
 	var oneHtml = '';
 
-	oneHtml += '<p class="package-name">';
+	oneHtml += '<h3 class="package-name">';
 	files = fileString.split(',');
 	files.forEach(function(file) {
 	    oneHtml += file;
 	    oneHtml += '<br />';
 	});
-	oneHtml += '</p>';
+	oneHtml += '</h3>';
 
 	oneHtml += '<p class="copyright">';
 	oneHtml += string;
