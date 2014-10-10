@@ -4,6 +4,8 @@ dist_js_DATA = \
 	licenseCrawler.js \
 	$(NULL)
 
+dist_pkgdata_DATA = EndlessOS-terms-conditions.pdf
+
 eos-license-service.service: eos-license-service.service.in Makefile
 	@sed -e "s|\@pkgdatadir\@|$(pkgdatadir)|" $< > $@
 systemdsystemunit_DATA = eos-license-service.service
