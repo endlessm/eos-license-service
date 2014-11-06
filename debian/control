@@ -6,7 +6,8 @@ Build-Depends: debhelper (>= 9),
 	dh-autoreconf,
 	dh-systemd,
 	systemd,
-	eos-node-modules-dev
+	eos-node-modules-dev,
+	unoconv
 Standards-Version: 3.8.0
 Homepage: http://www.endlessm.com
 
