@@ -10,7 +10,11 @@ AM_SILENT_RULES([yes])
 PKG_PROG_PKG_CONFIG
 
 # systemd
-AC_SUBST([systemdsystemunitdir], [$($PKG_CONFIG --variable=systemdsystemunitdir systemd)])
+AC_ARG_WITH([systemdsystemunitdir],
+            AS_HELP_STRING([--with-systemdsystemunitdir=DIR], [Directory for systemd service files]),
+	    [],
+	    [with_systemdsystemunitdir=$($PKG_CONFIG --variable=systemdsystemunitdir systemd)])
+AC_SUBST([systemdsystemunitdir], [$with_systemdsystemunitdir])
 
 AC_CONFIG_FILES([
 Makefile

@@ -1,3 +1,7 @@
+DISTCHECK_CONFIGURE_FLAGS = \
+	--with-systemdsystemunitdir=$$dc_install_base/$(systemdsystemunitdir) \
+	$(NULL)
+
 jsdir = $(pkgdatadir)
 dist_js_DATA = \
 	licenseApp.js \
