@@ -2,8 +2,6 @@ DISTCHECK_CONFIGURE_FLAGS = \
 	--with-systemdsystemunitdir=$$dc_install_base/$(systemdsystemunitdir) \
 	$(NULL)
 
-.NOTPARALLEL:
-
 jsdir = $(pkgdatadir)
 dist_js_DATA = \
 	licenseApp.js \
@@ -13,19 +11,16 @@ dist_js_DATA = \
 filename = "Endless-Mobile-Terms-of-Use.docx"
 targetfilename = "Endless-Mobile-Terms-of-Use.pdf"
 TERMS_LANGUAGES=$(shell ls $(srcdir)/terms)
-TERMS_ORIG_FILES=$(shell LANGUAGES="$(TERMS_LANGUAGES)"; for language in $$LANGUAGES; do find $(srcdir)/terms/$$language/$(filename); done)
+TERMS_PDF_FILES=$(shell LANGUAGES="$(TERMS_LANGUAGES)"; for language in $$LANGUAGES; do find $(srcdir)/terms/$$language/$(targetfilename); done)
 
-install-data-local:
+generate-pdfs:
 	for language in $(TERMS_LANGUAGES); do \
 		echo -e "Generating PDF files for $$language"; \
-		$(MKDIR_P) $(DESTDIR)$(pkgdatadir)/terms/$$language; \
-		$(UNOCONV) -p 5000 -vvv -f pdf -o $(DESTDIR)$(pkgdatadir)/terms/$$language/$(targetfilename) $(srcdir)/terms/$$language/$(filename); \
+		$(UNOCONV) -f pdf -o $(srcdir)/terms/$$language/$(targetfilename) $(srcdir)/terms/$$language/$(filename); \
 	done
 
-uninstall-local:
-	for language in $(TERMS_LANGUAGES); do \
-		rm -f $(DESTDIR)$(pkgdatadir)/terms/$$language/$(targetfilename); \
-	done
+pdfdir = $(pkgdatadir)
+nobase_dist_pdf_DATA = $(TERMS_PDF_FILES)
 
 eos-license-service.service: eos-license-service.service.in Makefile
 	@sed -e "s|\@pkgdatadir\@|$(pkgdatadir)|" $< > $@
@@ -34,7 +29,6 @@ dist_systemdsystemunit_DATA = eos-license-service.socket
 
 EXTRA_DIST = \
 	eos-license-service.service.in \
-	$(TERMS_ORIG_FILES) \
 	$(NULL)
 CLEANFILES = eos-license-service.service
 
