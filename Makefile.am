@@ -17,7 +17,7 @@ install-data-local:
 	for language in $(TERMS_LANGUAGES); do \
 		echo -e "Generating PDF files for $$language"; \
 		$(MKDIR_P) $(DESTDIR)$(pkgdatadir)/terms/$$language; \
-		$(UNOCONV) -p 5432 -vvv -f pdf -o $(DESTDIR)$(pkgdatadir)/terms/$$language/$(targetfilename) $(srcdir)/terms/$$language/$(filename); \
+		$(UNOCONV) -p 5000 -vvv -f pdf -o $(DESTDIR)$(pkgdatadir)/terms/$$language/$(targetfilename) $(srcdir)/terms/$$language/$(filename); \
 	done
 
 uninstall-local:
