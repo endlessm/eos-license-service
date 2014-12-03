@@ -18,7 +18,6 @@ LicenseCrawler.prototype.crawl = function() {
 
     var directories = [];
     var linksHash = {};
-    var info = null;
 
     try {
 	files.forEach(function(file) {
