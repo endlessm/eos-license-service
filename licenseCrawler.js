@@ -1,24 +1,52 @@
 var fs = require('fs');
 
+const CRAWL_LOCATION = '/usr/share/doc';
+
 function LicenseCrawler(path) {
     this._location = path;
 };
 
-LicenseCrawler.prototype.crawl = function() {
-    var hash = {};
+function prepareHtml(fileNames, copyright) {
+    // http://stackoverflow.com/questions/5007574
+    var sanitizedCopyright = copyright
+	.replace(/&/g, '&amp;')
+	.replace(/</g, '&lt;')
+	.replace(/>/g, '&gt;')
+	.replace(/\t/g, '    ')
+	.replace(/  /g, '&nbsp; ')
+	.replace(/  /g, ' &nbsp;')
+	.replace(/\r\n|\n|\r/g, '<br />');
+
+    var html = '<h3 class="package-name">';
     var files = [];
+
+    files = fileNames.toString().split(',');
+    files.forEach(function(file) {
+	html += file;
+	html += '<br />';
+    });
+    html += '</h3>';
+
+    html += '<p class="copyright">';
+    html += sanitizedCopyright;
+    html += '</p>';
+    html += '\n'
+
+    return html;
+}
+
+LicenseCrawler.prototype.listDirectories = function() {
+    var directories = [];
+    var files = [];
+    var linksHash = {};
     var basePath = this._location;
 
     try {
 	files = fs.readdirSync(basePath);
     } catch (e) {
 	console.log('Unable to enumerate ' + basePath + ' :' + e.toString());
-	return hash;
+	return [directories, linksHash];
     }
-
-    var directories = [];
-    var linksHash = {};
-    var info = null;
 
     try {
 	files.forEach(function(file) {
@@ -39,40 +67,13 @@ LicenseCrawler.prototype.crawl = function() {
 	});
     } catch (e) {
 	console.log('Unable to enumerate ' + basePath + ' :' + e.toString());
-	return hash;
+	return [directories, linksHash];
     }
 
-    directories.sort();
-    directories.forEach(function(dirName) {
-	var copyrightPath = basePath + '/' + dirName + '/copyright';
-	if (!fs.existsSync(copyrightPath)) {
-	    return;
-	}
-
-	var copyrightContents;
-	try {
-	    copyrightContents = fs.readFileSync(copyrightPath, { encoding: 'utf8' });
-	} catch (e) {
-	    console.log('Unable to read copyright file ' + copyrightPath + ' :' + e.toString());
-	    return;
-	}
-
-	var linkNames = linksHash[dirName];
-	if (!linkNames) {
-	    linkNames = [];
-	}
-
-	linkNames.unshift(dirName);
-	hash[linkNames] = copyrightContents;
-    });
-
-    return hash;
+    return [directories, linksHash];
 };
 
 exports.getLicenseList = function(req, res) {
-    var crawler = new LicenseCrawler('/usr/share/doc');
-    var hash = crawler.crawl();
-
     var htmlMeta =
 	'<meta charset="UTF-8">';
     var htmlStyle =
@@ -96,48 +97,43 @@ exports.getLicenseList = function(req, res) {
 	'</body>\n' +
 	'</html>';
 
-    var html = htmlHeader;
-    var keys = Object.keys(hash);
+    // send the HTML header
+    res.write(htmlHeader);
 
-    keys.forEach(function(key) {
-	var fileString = key;
-	var string;
+    // now start crawling
+    var crawler = new LicenseCrawler(CRAWL_LOCATION);
 
-	try {
-	    string = hash[key];
-	} catch (e) {
-	    logError(e, 'Can\'t convert one entry to string for entry ' + fileString);
+    var dirList = crawler.listDirectories();
+    var directories = dirList[0];
+    var linksHash = dirList[1];
+
+    directories.sort();
+    directories.forEach(function(dirName) {
+	var copyrightPath = CRAWL_LOCATION + '/' + dirName + '/copyright';
+	if (!fs.existsSync(copyrightPath)) {
 	    return;
 	}
 
-	// http://stackoverflow.com/questions/5007574
-	string = string
-	    .replace(/&/g, '&amp;')
-	    .replace(/</g, '&lt;')
-	    .replace(/>/g, '&gt;')
-	    .replace(/\t/g, '    ')
-	    .replace(/  /g, '&nbsp; ')
-	    .replace(/  /g, ' &nbsp;')
-	    .replace(/\r\n|\n|\r/g, '<br />');
+	var copyrightContents;
+	try {
+	    copyrightContents = fs.readFileSync(copyrightPath, { encoding: 'utf8' });
+	} catch (e) {
+	    console.log('Unable to read copyright file ' + copyrightPath + ' :' + e.toString());
+	    return;
+	}
 
-	var oneHtml = '';
+	var linkNames = linksHash[dirName];
+	if (!linkNames) {
+	    linkNames = [];
+	}
 
-	oneHtml += '<h3 class="package-name">';
-	files = fileString.split(',');
-	files.forEach(function(file) {
-	    oneHtml += file;
-	    oneHtml += '<br />';
-	});
-	oneHtml += '</h3>';
+	linkNames.unshift(dirName);
 
-	oneHtml += '<p class="copyright">';
-	oneHtml += string;
-	oneHtml += '</p>';
-	oneHtml += '\n'
-
-	html += oneHtml;
+	// send HTML for this directory
+	var html = prepareHtml(linkNames, copyrightContents);
+	res.write(html);
     });
 
-    html += htmlFooter;
-    res.end(html, null);
+    // send the HTML footer and end request
+    res.end(htmlFooter, null);
 };
