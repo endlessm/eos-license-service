@@ -8,8 +8,8 @@ dist_js_DATA = \
 	licenseCrawler.js \
 	$(NULL)
 
-filename = "Endless-Mobile-Terms-of-Use.docx"
-targetfilename = "Endless-Mobile-Terms-of-Use.pdf"
+filename = "Endless-Terms-of-Use.docx"
+targetfilename = "Endless-Terms-of-Use.pdf"
 TERMS_LANGUAGES=$(shell ls $(srcdir)/terms)
 TERMS_PDF_FILES=$(shell LANGUAGES="$(TERMS_LANGUAGES)"; for language in $$LANGUAGES; do find $(srcdir)/terms/$$language/$(targetfilename); done)
 
