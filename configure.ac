@@ -3,7 +3,7 @@ AC_INIT([eos-license-service], [1.0.0], [cosimo@endlessm.com], [eos-license-serv
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
-AM_INIT_AUTOMAKE([1.11 -Wno-portability foreign no-define tar-ustar no-dist-gzip dist-xz])
+AM_INIT_AUTOMAKE([1.11.2 -Wno-portability foreign no-define tar-ustar no-dist-gzip dist-xz])
 AM_MAINTAINER_MODE([enable])
 AM_SILENT_RULES([yes])
 
