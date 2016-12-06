@@ -90,7 +90,7 @@ exports.getLicenseList = function(req, res) {
 	htmlMeta + 
 	htmlStyle + 
 	'</head>\n' +
-	'<body>\n';
+	'<body>\n' +
 	'<h2>Open Source Software</h2>\n';
 	// Happy preamble of legal compliance goes here...
     var htmlFooter =
