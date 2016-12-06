@@ -23,7 +23,7 @@ pdfdir = $(pkgdatadir)
 nobase_dist_pdf_DATA = $(TERMS_PDF_FILES)
 
 eos-license-service.service: eos-license-service.service.in Makefile
-	@sed -e "s|\@pkgdatadir\@|$(pkgdatadir)|" $< > $@
+	@sed -e "s|\@pkgdatadir\@|$(pkgdatadir)|g" $< > $@
 systemdsystemunit_DATA = eos-license-service.service
 dist_systemdsystemunit_DATA = eos-license-service.socket
 

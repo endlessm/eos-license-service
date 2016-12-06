@@ -1,10 +1,9 @@
-var fs = require('fs');
+
+const GLib = imports.gi.GLib;
+const Gio = imports.gi.Gio;
+const Soup = imports.gi.Soup;
 
 const CRAWL_LOCATION = '/usr/share/doc';
-
-function LicenseCrawler(path) {
-    this._location = path;
-};
 
 function prepareHtml(fileNames, copyright) {
     // http://stackoverflow.com/questions/5007574
@@ -35,48 +34,35 @@ function prepareHtml(fileNames, copyright) {
     return html;
 }
 
-LicenseCrawler.prototype.listDirectories = function() {
-    var directories = [];
-    var files = [];
-    var linksHash = {};
-    var basePath = this._location;
+function listPackages() {
+    let dir = Gio.File.new_for_path(CRAWL_LOCATION);
+    let fileEnum = dir.enumerate_children('standard::name,standard::type,standard::symlink-target',
+                                          Gio.FileQueryInfoFlags.NOFOLLOW_SYMLINKS, null);
+    let packages = {};
 
-    try {
-	files = fs.readdirSync(basePath);
-    } catch (e) {
-	console.log('Unable to enumerate ' + basePath + ' :' + e.toString());
-	return [directories, linksHash];
+    let info;
+    while ((info = fileEnum.next_file(null))) {
+        let dirname = info.get_name();
+
+        let packageName;
+        if (info.get_file_type() === Gio.FileType.SYMBOLIC_LINK) {
+            packageName = info.get_symlink_target();
+        } else {
+            packageName = dirname;
+        }
+
+        if (!packages[packageName])
+            packages[packageName] = [];
+        packages[packageName].push(dirname);
     }
 
-    try {
-	files.forEach(function(file) {
-	    var fullPath = basePath + '/' + file;
-	    var stat = fs.lstatSync(fullPath);
-	    if (stat.isSymbolicLink()) {
-		var linkTarget = fs.readlinkSync(fullPath);
-		var linkNames = linksHash[linkTarget];
-		if (!linkNames) {
-		    linkNames = [];
-		}
+    return packages;
+}
 
-		linkNames.push(file);
-		linksHash[linkTarget] = linkNames;
-	    } else if (stat.isDirectory()) {
-		directories.push(file);
-	    }
-	});
-    } catch (e) {
-	console.log('Unable to enumerate ' + basePath + ' :' + e.toString());
-	return [directories, linksHash];
-    }
-
-    return [directories, linksHash];
-};
-
-exports.getLicenseList = function(req, res) {
-    var htmlMeta =
+function getLicenseList(msg) {
+    const htmlMeta =
 	'<meta charset="UTF-8">';
-    var htmlStyle =
+    const htmlStyle =
 	'<style>\n' +
 	'body{margin:50px;min-width:630px;font-family: sans-serif;}\n' +
 	'h2{border-top:5px solid #4a4a4a;padding-top:20px;font-size:28px;line-height:34px;margin-top:70px;}\n' +
@@ -84,7 +70,7 @@ exports.getLicenseList = function(req, res) {
 	'p{font-size:18px;line-height:28px;}\n' +
 	'.copyright { font-family: monospace; font-size: initial; font-weight: initial; }\n' +
 	'</style>\n';
-    var htmlHeader =
+    const htmlHeader =
 	'<html>\n' +
 	'<head>\n' + 
 	htmlMeta + 
@@ -93,47 +79,40 @@ exports.getLicenseList = function(req, res) {
 	'<body>\n' +
 	'<h2>Open Source Software</h2>\n';
 	// Happy preamble of legal compliance goes here...
-    var htmlFooter =
+    const htmlFooter =
 	'</body>\n' +
 	'</html>';
 
     // send the HTML header
-    res.write(htmlHeader);
+    msg.status_code = 200;
+    msg.response_headers.set_encoding(Soup.Encoding.CHUNKED);
+    msg.response_headers.set_content_type('text/html', { charset: 'UTF-8' });
+    msg.response_body.append(htmlHeader);
 
-    // now start crawling
-    var crawler = new LicenseCrawler(CRAWL_LOCATION);
+    const packages = listPackages();
+    const packageNames = Object.keys(packages);
 
-    var dirList = crawler.listDirectories();
-    var directories = dirList[0];
-    var linksHash = dirList[1];
+    packageNames.sort();
+    packageNames.forEach(function(packageName) {
+	const copyrightPath = GLib.build_filenamev([CRAWL_LOCATION, packageName, 'copyright']);
 
-    directories.sort();
-    directories.forEach(function(dirName) {
-	var copyrightPath = CRAWL_LOCATION + '/' + dirName + '/copyright';
-	if (!fs.existsSync(copyrightPath)) {
-	    return;
-	}
+        try {
+	    const [success, copyrightContents] = GLib.file_get_contents(copyrightPath);
+        } catch (e if e.matches(GLib.FileError, GLib.FileError.NOENT)) {
+            return;
+        } catch (e) {
+	    logError(e, 'Unable to read copyright file ' + copyrightPath);
+            return;
+        }
 
-	var copyrightContents;
-	try {
-	    copyrightContents = fs.readFileSync(copyrightPath, { encoding: 'utf8' });
-	} catch (e) {
-	    console.log('Unable to read copyright file ' + copyrightPath + ' :' + e.toString());
-	    return;
-	}
-
-	var linkNames = linksHash[dirName];
-	if (!linkNames) {
-	    linkNames = [];
-	}
-
-	linkNames.unshift(dirName);
+	const dirNames = packages[packageName];
 
 	// send HTML for this directory
-	var html = prepareHtml(linkNames, copyrightContents);
-	res.write(html);
+	const html = prepareHtml(dirNames, copyrightContents.toString());
+        msg.response_body.append(html);
     });
 
     // send the HTML footer and end request
-    res.end(htmlFooter, null);
+    msg.response_body.append(htmlFooter);
+    msg.response_body.complete();
 };

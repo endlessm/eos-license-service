@@ -4,4 +4,4 @@ Wants=network.target
 
 [Service]
 Environment=NODE_ENV=production
-ExecStart=/usr/bin/nodejs @pkgdatadir@/licenseApp.js
+ExecStart=/usr/bin/gjs -I @pkgdatadir@ @pkgdatadir@/licenseApp.js
