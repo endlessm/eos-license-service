@@ -108,8 +108,12 @@ function getLicenseList(msg) {
 	const dirNames = packages[packageName];
 
 	// send HTML for this directory
-	const html = prepareHtml(dirNames, copyrightContents.toString());
-        msg.response_body.append(html);
+        try {
+	    const html = prepareHtml(dirNames, copyrightContents.toString());
+            msg.response_body.append(html);
+        } catch (e) {
+            logError(e, 'Unable to convert contents of ' + copyrightPath + ' to string');
+        }
     });
 
     // send the HTML footer and end request
