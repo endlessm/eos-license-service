@@ -3,5 +3,4 @@ Description=EndlessOS License Service
 Wants=network.target
 
 [Service]
-Environment=NODE_ENV=production
 ExecStart=/usr/bin/gjs -I @pkgdatadir@ @pkgdatadir@/licenseApp.js
