@@ -7,14 +7,14 @@ Build-Depends: debhelper (>= 9),
 	dh-systemd,
 	pkg-config,
 	systemd,
-	eos-node-modules-dev
 Standards-Version: 3.8.0
 Homepage: http://www.endlessm.com
 
 Package: eos-license-service
 Architecture: all
-Depends: ${misc:Depends},
-	 eos-node-modules,
-	 nodejs
+Depends: gjs,
+         gir1.2-glib-2.0,
+         gir1.2-soup-2.4,
+         ${misc:Depends}
 Description: EndlessOS License Service
  Node service to display the list of licenses used in the OS
