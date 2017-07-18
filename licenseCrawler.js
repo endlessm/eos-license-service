@@ -6,15 +6,7 @@ const Soup = imports.gi.Soup;
 const CRAWL_LOCATION = '/usr/share/doc';
 
 function prepareHtml(fileNames, copyright) {
-    // http://stackoverflow.com/questions/5007574
-    var sanitizedCopyright = copyright
-	.replace(/&/g, '&amp;')
-	.replace(/</g, '&lt;')
-	.replace(/>/g, '&gt;')
-	.replace(/\t/g, '    ')
-	.replace(/  /g, '&nbsp; ')
-	.replace(/  /g, ' &nbsp;')
-	.replace(/\r\n|\n|\r/g, '<br />');
+    var sanitizedCopyright = GLib.markup_escape_text(copyright, -1);
 
     var html = '<h3 class="package-name">';
     var files = [];
@@ -68,7 +60,7 @@ function getLicenseList(msg) {
 	'h2{border-top:5px solid #4a4a4a;padding-top:20px;font-size:28px;line-height:34px;margin-top:70px;}\n' +
 	'h3{border-top:solid 1px #d8d8d8;padding-top:20px;font-size:22px;line-height:26px;clear:both;margin-top:50px;}\n' +
 	'p{font-size:18px;line-height:28px;}\n' +
-	'.copyright { font-family: monospace; font-size: initial; font-weight: initial; }\n' +
+	'.copyright { font-family: monospace; font-size: initial; font-weight: initial; -moz-tab-size: 4; tab-size: 4; white-space: pre-wrap; }\n' +
 	'</style>\n';
     const htmlHeader =
 	'<html>\n' +
