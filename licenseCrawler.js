@@ -11,11 +11,7 @@ function prepareHtml(fileNames, copyright) {
     var html = '<h3 class="package-name">';
     var files = [];
 
-    files = fileNames.toString().split(',');
-    files.forEach(function(file) {
-	html += file;
-	html += '<br />';
-    });
+    html += fileNames.join('<br />');
     html += '</h3>';
 
     html += '<p class="copyright">';
