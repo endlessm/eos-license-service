@@ -29,7 +29,7 @@ function prepareHtml(fileNames, copyright) {
     html += '<p class="copyright">';
     html += sanitizedCopyright;
     html += '</p>';
-    html += '\n'
+    html += '\n';
 
     return html;
 }
