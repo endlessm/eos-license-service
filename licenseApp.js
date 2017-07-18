@@ -10,7 +10,8 @@ function serverListen(server) {
     if (GLib.getenv('LISTEN_FDS') !== null) {
         server.listen_fd(3, 0);
     } else {
-        server.listen_local(DEFAULT_PORT, 0);
+        const port = Number.parseInt(GLib.getenv('LISTEN_PORT'), 10);
+        server.listen_local(isNaN(port) ? DEFAULT_PORT : port, 0);
     }
 }
 
