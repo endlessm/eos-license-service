@@ -20,5 +20,10 @@ let server = new Soup.Server();
 server.add_handler('/', function(server, msg, path, query, client) {
     licenseCrawler.getLicenseList(msg);
 });
+// /package/foo,bar,baz => license for package foo, shared with bar and baz
+server.add_handler('/package', function(server, msg, path, query, client) {
+    const packageNames = path.slice('/package/'.length).split(',');
+    licenseCrawler.getLicense(msg, packageNames);
+})
 serverListen(server);
 mainloop.run();
