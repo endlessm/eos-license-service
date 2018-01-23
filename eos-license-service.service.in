@@ -4,3 +4,27 @@ Wants=network.target
 
 [Service]
 ExecStart=/usr/bin/gjs -I @pkgdatadir@ @pkgdatadir@/licenseApp.js
+User=nobody
+
+# Sandboxing
+CapabilityBoundingSet=
+Environment=GIO_USE_VFS=local
+Environment=GSETTINGS_BACKEND=memory
+Environment=GVFS_DISABLE_FUSE=1
+Environment=GVFS_REMOTE_VOLUME_MONITOR_IGNORE=1
+InaccessiblePaths=/sysroot/home
+NoNewPrivileges=yes
+PrivateDevices=yes
+PrivateNetwork=yes
+PrivateTmp=yes
+PrivateUsers=yes
+ProtectControlGroups=yes
+ProtectHome=yes
+ProtectKernelModules=yes
+ProtectKernelTunables=yes
+ProtectSystem=strict
+RestrictAddressFamilies=AF_UNIX
+RestrictRealtime=yes
+SystemCallArchitectures=native
+SystemCallErrorNumber=EPERM
+SystemCallFilter=~@clock @cpu-emulation @debug @keyring @module @mount @obsolete @privileged @raw-io @resources
