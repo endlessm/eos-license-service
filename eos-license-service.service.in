@@ -12,7 +12,6 @@ Environment=GIO_USE_VFS=local
 Environment=GSETTINGS_BACKEND=memory
 Environment=GVFS_DISABLE_FUSE=1
 Environment=GVFS_REMOTE_VOLUME_MONITOR_IGNORE=1
-InaccessiblePaths=/sysroot/home
 NoNewPrivileges=yes
 PrivateDevices=yes
 PrivateNetwork=yes
