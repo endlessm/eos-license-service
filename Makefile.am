@@ -8,15 +8,15 @@ dist_js_DATA = \
 	licenseCrawler.js \
 	$(NULL)
 
-filename = "Endless-Terms-of-Use.docx"
-targetfilename = "Endless-Terms-of-Use.pdf"
-TERMS_LANGUAGES=$(shell ls $(srcdir)/terms)
-TERMS_PDF_FILES=$(shell LANGUAGES="$(TERMS_LANGUAGES)"; for language in $$LANGUAGES; do find $(srcdir)/terms/$$language/$(targetfilename); done)
+filename = "Terms-of-Use.docx"
+targetfilename = "Terms-of-Use.pdf"
+TERMS_SRC_FILES=$(shell find $(srcdir)/terms -name $(filename))
+TERMS_PDF_FILES=$(shell find $(srcdir)/terms -name $(targetfilename))
 
 generate-pdfs:
-	for language in $(TERMS_LANGUAGES); do \
-		echo -e "Generating PDF files for $$language"; \
-		$(UNOCONV) -f pdf -o $(srcdir)/terms/$$language/$(targetfilename) $(srcdir)/terms/$$language/$(filename); \
+	for srctermpath in $(TERMS_SRC_FILES); do \
+		echo -e "Generating PDF files for $$srctermpath"; \
+		$(UNOCONV) -f pdf -o $$(dirname $$srctermpath)/$(targetfilename) $$srctermpath; \
 	done
 
 pdfdir = $(pkgdatadir)
