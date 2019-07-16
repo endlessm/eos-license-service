@@ -117,13 +117,15 @@ function getLicense(msg, packageNames) {
             logError(e, html);
             statusCode = 500;
         }
-    } catch (e if e.matches(GLib.FileError, GLib.FileError.NOENT)) {
-        statusCode = 400;
-        html = 'Not found: ' + copyrightPath;
     } catch (e) {
-        html = 'Unable to read copyright file: ' + copyrightPath;
-        logError(e, html);
-        statusCode = 500;
+        if (e.matches(GLib.FileError, GLib.FileError.NOENT)) {
+            statusCode = 400;
+            html = 'Not found: ' + copyrightPath;
+        } else {
+            html = 'Unable to read copyright file: ' + copyrightPath;
+            logError(e, html);
+            statusCode = 500;
+        }
     }
 
     // send the HTML header
