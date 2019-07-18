@@ -1,4 +1,4 @@
-
+const ByteArray = imports.byteArray;
 const GLib = imports.gi.GLib;
 const Gio = imports.gi.Gio;
 const Soup = imports.gi.Soup;
@@ -111,7 +111,7 @@ function getLicense(msg, packageNames) {
         const [success, copyrightContents] = GLib.file_get_contents(copyrightPath);
 
         try {
-            html = prepareHtml(packageNames, copyrightContents.toString());
+            html = prepareHtml(packageNames, ByteArray.toString(copyrightContents));
         } catch (e) {
             html = 'Unable to convert contents of ' + copyrightPath + ' to string';
             logError(e, html);
