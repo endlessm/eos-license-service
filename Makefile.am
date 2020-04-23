@@ -15,8 +15,7 @@ TERMS_PDF_FILES=$(shell find $(srcdir)/terms -name $(targetfilename))
 
 generate-pdfs:
 	for srctermpath in $(TERMS_SRC_FILES); do \
-		echo -e "Generating PDF files for $$srctermpath"; \
-		$(UNOCONV) -f pdf -o $$(dirname $$srctermpath)/$(targetfilename) $$srctermpath; \
+		$(srcdir)/build-aux/docx-to-pdf $$srctermpath; \
 	done
 
 pdfdir = $(pkgdatadir)
@@ -28,6 +27,7 @@ systemdsystemunit_DATA = eos-license-service.service
 dist_systemdsystemunit_DATA = eos-license-service.socket
 
 EXTRA_DIST = \
+	build-aux/docx-to-pdf \
 	eos-license-service.service.in \
 	$(NULL)
 CLEANFILES = eos-license-service.service

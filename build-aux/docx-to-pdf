@@ -1,0 +1,23 @@
+#!/bin/bash
+# Usage:
+#     docx-to-pdf input
+# Converts input to a PDF in the same directory with the extension replaced.
+# Assumes LibreOffice is installed with Flatpak, as it is on all Endless OS
+# systems.
+set -e
+input=${1:?missing input path}
+outdir=$(dirname "$input")
+cmd=()
+if [[ "$TOOLBOX_PATH" ]]; then
+    # When working on Endless OS, one will run 'make' in a toolbox container,
+    # but LibreOffice is installed on the host. Break out of the toolbox.
+    cmd+=(flatpak-spawn --host)
+fi
+cmd+=(
+    flatpak run org.libreoffice.LibreOffice
+    --convert-to pdf
+    --outdir "$outdir"
+    "$input"
+)
+set -x
+exec "${cmd[@]}"
