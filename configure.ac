@@ -9,7 +9,6 @@ AM_SILENT_RULES([yes])
 
 PKG_PROG_PKG_CONFIG
 AC_PROG_MKDIR_P
-AC_PATH_PROG([UNOCONV], [unoconv])
 
 # systemd
 AC_ARG_WITH([systemdsystemunitdir],
