@@ -36,6 +36,7 @@ fi
 cmd+=(
     flatpak run --filesystem="$LO_TMP_PROFILE_DIR" org.libreoffice.LibreOffice
     -env:UserInstallation="file://$LO_TMP_PROFILE_DIR"
+    --headless
     --convert-to pdf
     --outdir "$outdir"
     "$input"
