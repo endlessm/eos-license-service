@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<oor:items xmlns:oor="http://openoffice.org/2001/registry" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<!-- Disable option to export links relative to filesystem - https://help.libreoffice.org/Common/Export_as_PDF#Export_URLs_relative_to_file_system.
+     Found by using File -> Export As -> Export as PDF -> Links and checking the changes to the LibreOffice saved profile. -->
+<item oor:path="/org.openoffice.Office.Common/Filter/PDF/Export"><prop oor:name="ExportLinksRelativeFsys" oor:op="fuse"><value>false</value></prop></item>
+</oor:items>
