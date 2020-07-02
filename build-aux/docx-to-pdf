@@ -5,8 +5,28 @@
 # Assumes LibreOffice is installed with Flatpak, as it is on all Endless OS
 # systems.
 set -e
+
+SCRIPT=$(realpath "$0")
+srcdir=$(dirname "$SCRIPT")
 input=${1:?missing input path}
 outdir=$(dirname "$input")
+tmpdir=$(mktemp -d)
+
+cleanup() {
+    retval=$?
+    rm -rf "$tmpdir"
+    exit $retval
+}
+trap cleanup EXIT
+
+# We load a custom profile so we can set some options when converting to PDF
+LO_CUSTOM_PROFILE="$srcdir"/libreoffice/custom-profile.xcu
+# Let's use a temp profile dir as LO will save the profile after running
+LO_TMP_PROFILE_DIR="$tmpdir"/libreoffice/profile/
+
+mkdir -p "$LO_TMP_PROFILE_DIR"/user
+cp "$LO_CUSTOM_PROFILE" "$LO_TMP_PROFILE_DIR"/user/registrymodifications.xcu
+
 cmd=()
 if [[ "$TOOLBOX_PATH" ]]; then
     # When working on Endless OS, one will run 'make' in a toolbox container,
@@ -14,10 +34,12 @@ if [[ "$TOOLBOX_PATH" ]]; then
     cmd+=(flatpak-spawn --host)
 fi
 cmd+=(
-    flatpak run org.libreoffice.LibreOffice
+    flatpak run --filesystem="$LO_TMP_PROFILE_DIR" org.libreoffice.LibreOffice
+    -env:UserInstallation="file://$LO_TMP_PROFILE_DIR"
+    --headless
     --convert-to pdf
     --outdir "$outdir"
     "$input"
 )
-set -x
-exec "${cmd[@]}"
+echo "${cmd[@]}"
+"${cmd[@]}"
