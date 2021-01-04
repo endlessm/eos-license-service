@@ -4,7 +4,6 @@ Priority: optional
 Maintainer: Cosimo Cecchi <cosimo@endlessm.com>
 Build-Depends: debhelper (>= 9),
 	dh-autoreconf,
-	dh-systemd,
 	pkg-config,
 	systemd,
 Standards-Version: 3.8.0
