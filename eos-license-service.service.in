@@ -4,7 +4,8 @@ Wants=network.target
 
 [Service]
 ExecStart=/usr/bin/gjs -I @pkgdatadir@ @pkgdatadir@/licenseApp.js
-User=nobody
+User=eos-license-service
+DynamicUser=yes
 
 # Sandboxing
 CapabilityBoundingSet=
