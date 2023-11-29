@@ -1,3 +1,4 @@
+imports.gi.versions.Soup = "2.4";
 
 const GLib = imports.gi.GLib;
 const Soup = imports.gi.Soup;
